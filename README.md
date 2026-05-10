@@ -14,7 +14,7 @@ The objective of this project is to analyze the provided crime dataset by creati
 - Analyze crime distribution across suburbs in South Australia
 - Identify the most common offence categories
 - Perform year-wise and month-wise crime trend analysis
-- Measure contribution of top suburbs to total crime volume
+- Measure contribution of top suburbs to total crime
 - Explore hierarchical offence category patterns
 - Develop a structured relational database for analytical reporting
 
