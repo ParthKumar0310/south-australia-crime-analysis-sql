@@ -1,15 +1,15 @@
 use south_australia_crimestatistics;
-create table crime_fact(
+create table staging_crime_dataset(
 reported_date date,
-subrub varchar(50),
+suburb varchar(50),
 postcode bigint,
-offence_level1 varchar(100),
-offence_level2 varchar(100),
-offence_level3 varchar(100),
+offence_level_1 varchar(100),
+offence_level_2 varchar(100),
+offence_level_3 varchar(100),
 offence_count bigint
 );
-select count(*) from crime_fact;
-select * from crime_fact limit 5;
+select count(*) from staging_crime_dataset;
+select * from staging_crime_dataset limit 5;
 
 CREATE TABLE suburbs (
     suburb_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE offences(
     offence_level_3 VARCHAR(100)
 );
 
-CREATE TABLE crime_dataset (
+CREATE TABLE crime_fact (
     crime_id INT AUTO_INCREMENT PRIMARY KEY,
     suburb_id INT,
     offence_id INT,
@@ -37,15 +37,15 @@ CREATE TABLE crime_dataset (
 
 
 INSERT INTO suburbs (suburb, postcode)
-SELECT DISTINCT subrub, postcode
-FROM crime_fact;
+SELECT DISTINCT suburb, postcode
+FROM staging_crime_dataset;
 
 INSERT INTO offences (offence_level_1, offence_level_2, offence_level_3)
 SELECT DISTINCT offence_level1, offence_level2, offence_level3
-FROM crime_fact;
+FROM staging_crime_dataset;
 
 
-insert into crime_dataset(
+insert into crime_fact(
 suburb_id,
 offence_id,
 reported_date,
@@ -55,9 +55,9 @@ s.suburb_id,
 o.offence_id,
 cf.reported_date,
 cf.offence_count
-from crime_fact cf
+from staging_crime_dataset cf
 join suburbs s
-on cf.subrub=s.suburb
+on cf.suburb=s.suburb
 and cf.postcode=s.postcode
 join offences o
 on cf.offence_level1=o.offence_level_1
@@ -66,26 +66,26 @@ and cf.offence_level3=o.offence_level_3;
 
 SELECT COUNT(*) as total_suburbs FROM suburbs;
 SELECT * FROM offences;
-select count(*) as total_crimes from crime_dataset;
+select count(*) as total_crimes from crime_fact;
 
 -- Highest Total Crime By Suburb 
 select sum(cf.offence_count) as total_crimes, suburbs.suburb
-from crime_dataset cf
+from crime_fact cf
 join suburbs
 on suburbs.suburb_id=cf.suburb_id
 group by suburbs.suburb
 order by total_crimes desc;
 
--- lowest total crimes
+-- Lowest Total Crimes
 select sum(cf.offence_count) as total_crimes, suburbs.suburb
-from crime_dataset cf
+from crime_fact cf
 join suburbs
 on suburbs.suburb_id=cf.suburb_id
 group by suburbs.suburb
 having total_crimes between 1 and 10
 order by total_crimes asc;
 
--- most common crime category in level 1 by suburbs
+-- Most Common Crime Category in Level 1 by Suburbs
 select
 s.suburb,
 sum(case
@@ -99,7 +99,7 @@ sum(case
     else 0
     end) as person_crimes,
 sum(cd.offence_count) as total_crimes
-from crime_dataset cd
+from crime_fact cd
 join suburbs s
 on cd.suburb_id=s.suburb_id
 join offences o
@@ -107,18 +107,17 @@ on cd.offence_id=o.offence_id
 group by s.suburb
 order by total_crimes desc;
 
-
--- over time analysis
+-- Over Time Analysis
 select
 o.offence_level_1,
 YEAR(cd.reported_date) as Year,
 sum(cd.offence_count) as total_crimes
-from crime_dataset cd
+from crime_fact cd
 join offences o
 on cd.offence_id=o.offence_id
 group by 1,2;
 
--- crime growth by year
+-- Crime Growth by Year
 select
 offence_level_1,
 year,
@@ -134,13 +133,13 @@ from
 o.offence_level_1,
 YEAR(cd.reported_date) as Year,
 sum(cd.offence_count) as total_crimes
-from crime_dataset cd
+from crime_fact cd
 join offences o
 on cd.offence_id=o.offence_id
 group by 1,2) t;
 
 
--- crime growth by month
+-- Crime Growth by Month
 select
 offence_level_1,
 year,
@@ -169,7 +168,7 @@ year desc,
 month asc;
 --
 
--- top 5 crimes level 2 by suburb
+-- Top 5 Crimes Level 2 by Suburb
 select * from (
 select *,row_number() over(partition by suburb order by total_crimes desc) 
 as rank_num 
@@ -179,7 +178,7 @@ s.suburb,
 s.postcode,
 o.offence_level_2,
 sum(cd.offence_count) as total_crimes
-from crime_dataset cd
+from crime_fact cd
 join suburbs s
 on cd.suburb_id=s.suburb_id
 join offences o
@@ -189,7 +188,7 @@ AND TRIM(s.suburb) <> ''
 group by 1,2,3)t)ranked
 where rank_num<=5;
 
--- hieraraichal level crimes
+-- Hieraraichal Level Crimes
 select
 o.offence_level_1,
 o.offence_level_2,
@@ -212,25 +211,25 @@ GROUP BY
     o.offence_level_1,
     o.offence_level_2 WITH ROLLUP;
 
--- level 3
+-- Level 3 and the Crimes
 select
 o.offence_level_3,
 sum(cd.offence_count) as total_crimes
-from crime_dataset cd
+from crime_fact cd
 join suburbs s
 on cd.suburb_id=s.suburb_id
 join offences o
 on cd.offence_id=o.offence_id
 group by 1;
 
--- percentage contribution
+-- Percentage Contribution
 select o.offence_level_1,
 sum(cd.offence_count) as total_crimes,
 round(sum(cd.offence_count)*100.0/
 (select sum(offence_count) from crime_dataset),
 2) as crime_percentage
 
-from crime_dataset cd
+from crime_fact cd
 join offences o
 on cd.offence_id = o.offence_id
 
@@ -240,28 +239,22 @@ on cd.offence_id = o.offence_id
 select 
 s.suburb,sum(cd.offence_count) as total_crimes,
 round(sum(cd.offence_count)*100.0/(select sum(offence_count) from crime_dataset),2) as crime_percentage
-from crime_dataset cd
+from crime_fact cd
 join suburbs s on cd.suburb_id=s.suburb_id
 where s.suburb is not null and trim(s.suburb)<>''
 group by s.suburb
 order by total_crimes desc
 limit 10;
  
- -- grouping by year and month
+ -- Grouping By Year and Month
  SELECT 
     YEAR(reported_date) AS crime_year,
     MONTH(reported_date) AS crime_month,
     SUM(offence_count) AS total_offences
-FROM crime_dataset
+FROM crime_fact
 GROUP BY 
     YEAR(reported_date),
     MONTH(reported_date)
 ORDER BY 
     crime_year,
     crime_month;
- 
- 
- 
- 
- 
- 
