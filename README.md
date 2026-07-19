@@ -1,6 +1,6 @@
-# 🚔 South Australia Crime Analysis using SQL
+#  South Australia Crime Analysis using SQL
 
-## 📌 Project Overview
+##  Project Overview
 This project aims to perform an analysis of crime patterns and trends in South Australia through the use of SQL data modelling and query analysis techniques.
 
 The data includes about **140,000+ records** of crimes committed in South Australia, consisting of various types of offences, suburb locations, postcodes, and dates.
@@ -9,7 +9,7 @@ The objective of this project is to analyze the provided crime dataset by creati
 
 ---
 
-# 🎯 Project Objectives
+#  Project Objectives
 
 - Analyze crime distribution across suburbs in South Australia
 - Identify the most common offence categories
@@ -20,7 +20,7 @@ The objective of this project is to analyze the provided crime dataset by creati
 
 ---
 
-# 🗂️ Dataset Information
+#  Dataset Information
 
 The dataset includes:
 
@@ -31,11 +31,11 @@ The dataset includes:
 
 ---
 
-# 🏗️ Database Design & Data Modelling
+#  Database Design & Data Modelling
 
 The project was designed using a relational database structure with normalization concepts.
 
-## 📌 Dimension Tables
+##  Dimension Tables
 
 ### `suburbs`
 Contains:
@@ -50,7 +50,7 @@ Contains:
 - offence_level_2
 - offence_level_3
 
-## 📌 Fact Table
+##  Fact Table
 
 ### `crime_fact`
 Contains:
@@ -62,11 +62,11 @@ Contains:
 
 ---
 
-# 🧠 SQL Concepts & Techniques Used
+#  SQL Concepts & Techniques Used
 
 This project demonstrates multiple SQL concepts including:
 
-## 🔹 Data Definition & Administration
+##  Data Definition & Administration
 - CREATE TABLE
 - INSERT INTO
 - Primary Keys
@@ -74,7 +74,7 @@ This project demonstrates multiple SQL concepts including:
 - Relational Data Modelling
 - Database Normalization
 
-## 🔹 Analytical SQL Concepts
+##  Analytical SQL Concepts
 - GROUP BY
 - ORDER BY
 - Aggregate Functions
@@ -87,7 +87,7 @@ This project demonstrates multiple SQL concepts including:
 - Year-over-Year Analysis
 - Time-Series Analysis
 
-## 🔹 Advanced SQL Techniques
+##  Advanced SQL Techniques
 - Joins
 - Multi-table Analysis
 - Subqueries
@@ -96,29 +96,29 @@ This project demonstrates multiple SQL concepts including:
 
 ---
 
-# 📈 Key Analysis Performed
+#  Key Analysis Performed
 
-## ✅ Crime Contribution Analysis
+##  Crime Contribution Analysis
 - Percentage contribution of top suburbs to total crimes in South Australia
 
-## ✅ Time-Series Analysis
+##  Time-Series Analysis
 - Monthly and yearly crime trend analysis
 
-## ✅ Category Analysis
+##  Category Analysis
 - Most common offence categories by suburb
 
-## ✅ Top Crime Analysis
+##  Top Crime Analysis
 - Top Level-2 offence categories by suburb
 
-## ✅ Hierarchical Crime Analysis
+##  Hierarchical Crime Analysis
 - Offence hierarchy analysis using offence levels
 
-## ✅ Trend & Growth Analysis
+##  Trend & Growth Analysis
 - Year-wise crime growth analysis
   
 ---
 
-# 📌 Conclusion
+# Conclusion
 
 This project helped strengthen practical skills in:
 
